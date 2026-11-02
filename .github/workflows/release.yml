@@ -1,0 +1,29 @@
+name: Release automatique
+
+on:
+  push:
+    branches:
+      - main # Ou master selon le nom de votre branche principale
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Permet à l'outil de créer le tag Git
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Configuration de Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Exécution de Semantic Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release --plugins @semantic-release/commit-analyzer,@semantic-release/release-notes-generator,@semantic-release/github
